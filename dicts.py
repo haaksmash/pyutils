@@ -46,10 +46,13 @@ def subtract_by_key(dict_a, dict_b):
     return difference_dict
 
 
-def subtract(dict_a, dict_b):
+def subtract(dict_a, dict_b, strict=False):
     """a stricter form of subtract_by_key(), this version will only remove an
     entry from dict_a if the key is in dict_b *and* the value at that key
     matches"""
+    if not strict:
+        return subtract_by_key(dict_a, dict_b)
+
     difference_dict = {}
     for key in dict_a:
         if key not in dict_b or dict_b[key] != dict_a[key]:
@@ -71,3 +74,14 @@ def winnow_by_keys(dct, keys):
             has_not[key] = dct[key]
 
     return WinnowedResult(has, has_not)
+
+
+def intersection(dict_a, dict_b, strict=True):
+    intersection_dict = {}
+
+    for key in dict_a:
+        if key in dict_b:
+            if not strict or dict_a[key] == dict_b[key]:
+                intersection_dict[key] = dict_a[key]
+
+    return intersection_dict
