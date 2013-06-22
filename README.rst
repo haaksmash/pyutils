@@ -1,4 +1,4 @@
-Pyutils
+Utils
 ~~~~~~~
 
 Sometimes you write a function over and over again; sometimes you look up at
