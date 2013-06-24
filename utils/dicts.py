@@ -85,3 +85,10 @@ def intersection(dict_a, dict_b, strict=True):
                 intersection_dict[key] = dict_a[key]
 
     return intersection_dict
+
+
+def setdefaults(dct, defaults):
+    for key in defaults:
+        dct.setdefault(key, defaults[key])
+
+    return dct
