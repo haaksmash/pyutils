@@ -25,3 +25,24 @@ def date_from_string(string, format_string=None):
             continue
 
     raise ValueError("Could not produce date from string: {}".format(string))
+
+
+class TimePeriod(object):
+
+    def __init__(self, earliest, latest):
+        if not isinstance(earliest, datetime.date) and earliest is not None:
+            raise TypeError("Earliest must be a date or None")
+        if not isinstance(latest, datetime.date) and latest is not None:
+            raise TypeError("Latest must be a date or None")
+
+        self._earliest = earliest
+        self._latest = latest
+
+    def __contains__(self, key):
+        if not isinstance(key, datetime.date):
+            raise TypeError("{} is not a date".format(key))
+
+        if self._earliest <= key <= self._latest:
+            return True
+
+        return False
