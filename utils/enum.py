@@ -9,9 +9,6 @@ class enum(object):
 
         self.__enum_items = {}
 
-        for val, arg in enumerate(args):
-            self.__enum_items[arg] = val
-
         counter = 0
         for arg, val in kwargs.iteritems():
             if val is None:
@@ -20,6 +17,9 @@ class enum(object):
             elif isinstance(val, int):
                 counter = val + 1
 
+            self.__enum_items[arg] = val
+
+        for val, arg in enumerate(args, start=counter):
             self.__enum_items[arg] = val
 
     def __getattr__(self, attr_name):
@@ -35,3 +35,15 @@ class enum(object):
     @classmethod
     def from_dict(cls, dct):
         return cls(**dct)
+
+    def __iter__(self):
+        for k, v in self.__enum_items.iteritems():
+            yield k, v
+
+    def __repr__(self):
+        start = "<{}: ".format(self.__class__.__name__)
+        values = []
+        for k, v in self:
+            values += ["{}={}".format(k, v)]
+        end = ">"
+        return start + ", ".join(values) + end
