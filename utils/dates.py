@@ -46,3 +46,21 @@ class TimePeriod(object):
             return True
 
         return False
+
+
+def days_ago(days, datetime=True):
+    delta = datetime.timedelta(days=days)
+    dt = datetime.datetime.now() - delta
+    if datetime:
+        return dt
+    else:
+        return dt.date()
+
+
+def days_ahead(days, datetime=True):
+    delta = datetime.timedelta(days=days)
+    dt = datetime.datetime.now() - delta
+    if datetime:
+        return dt
+    else:
+        return dt.date()
