@@ -27,6 +27,22 @@ def date_from_string(string, format_string=None):
     raise ValueError("Could not produce date from string: {}".format(string))
 
 
+def to_datetime(plain_date, hours=0, minutes=0, seconds=0, ms=0):
+    """given a datetime.date, gives back a datetime.datetime"""
+    # don't mess with datetimes
+    if isinstance(plain_date, datetime.datetime):
+        return plain_date
+    return datetime.datetime(
+        plain_date.year,
+        plain_date.month,
+        plain_date.day,
+        hours,
+        minutes,
+        seconds,
+        ms,
+    )
+
+
 class TimePeriod(object):
 
     def __init__(self, earliest, latest):
@@ -35,6 +51,15 @@ class TimePeriod(object):
         if not isinstance(latest, datetime.date) and latest is not None:
             raise TypeError("Latest must be a date or None")
 
+        if earliest is not None and latest is not None and earliest >= latest:
+            raise ValueError("Earliest must be earlier than latest")
+
+        # convert dates to datetimes, for to have better resolution
+        if earliest is not None:
+            earliest = to_datetime(earliest)
+        if latest is not None:
+            latest = to_datetime(latest, 23, 59, 59)
+
         self._earliest = earliest
         self._latest = latest
 
@@ -42,10 +67,19 @@ class TimePeriod(object):
         if not isinstance(key, datetime.date):
             raise TypeError("{} is not a date".format(key))
 
-        if self._earliest <= key <= self._latest:
-            return True
+        key = to_datetime(key)
 
-        return False
+        if self._latest is None:
+            upper_bounded = True
+        else:
+            upper_bounded = key <= self._latest
+
+        if self._earliest is None:
+            lower_bounded = True
+        else:
+            lower_bounded = self._earliest <= key
+
+        return upper_bounded and lower_bounded
 
 
 def days_ago(days, datetime=True):
