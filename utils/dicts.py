@@ -88,6 +88,8 @@ def intersection(dict_a, dict_b, strict=True):
 
 
 def setdefaults(dct, defaults):
+    """Given a target dct and a dict of {key:default value} pairs,
+    calls setdefault for all of those pairs."""
     for key in defaults:
         dct.setdefault(key, defaults[key])
 

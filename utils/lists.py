@@ -2,6 +2,8 @@
 
 
 def unlist(list_thing, complain=True):
+    """transforms [Something] -> Something. By default, raises a ValueError for
+    any other list values."""
     if complain and len(list_thing) > 1:
         raise ValueError("More than one element in {}".format(list_thing))
     elif len(list_thing) == 1:
@@ -10,3 +12,20 @@ def unlist(list_thing, complain=True):
     if complain:
         raise ValueError("Nothing in {}".format(list_thing))
     return None
+
+
+def flatten(iterable):
+    """Fully flattens an iterable:
+    In: flatten([1,2,3,4,[5,6,[7,8]]])
+    Out: [1,2,3,4,5,6,7,8]
+    """
+    container = iterable.__class__
+
+    placeholder = []
+    for item in iterable:
+        try:
+            placeholder.extend(flatten(item))
+        except TypeError:
+            placeholder.append(item)
+
+    return container(placeholder)
