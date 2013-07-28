@@ -51,50 +51,51 @@ class TimePeriod(object):
         if not isinstance(latest, datetime.date) and latest is not None:
             raise TypeError("Latest must be a date or None")
 
-        if earliest is not None and latest is not None and earliest >= latest:
-            raise ValueError("Earliest must be earlier than latest")
-
         # convert dates to datetimes, for to have better resolution
         if earliest is not None:
             earliest = to_datetime(earliest)
         if latest is not None:
             latest = to_datetime(latest, 23, 59, 59)
 
+        if earliest is not None and latest is not None and earliest >= latest:
+            raise ValueError("Earliest must be earlier than latest")
+
         self._earliest = earliest
         self._latest = latest
 
     def __contains__(self, key):
-        if not isinstance(key, datetime.date):
-            raise TypeError("{} is not a date".format(key))
+        if isinstance(key, datetime.date):
+            key = to_datetime(key)
 
-        key = to_datetime(key)
+            if self._latest is None:
+                upper_bounded = True
+            else:
+                upper_bounded = key <= self._latest
 
-        if self._latest is None:
-            upper_bounded = True
-        else:
-            upper_bounded = key <= self._latest
+            if self._earliest is None:
+                lower_bounded = True
+            else:
+                lower_bounded = self._earliest <= key
 
-        if self._earliest is None:
-            lower_bounded = True
-        else:
-            lower_bounded = self._earliest <= key
+            return upper_bounded and lower_bounded
 
-        return upper_bounded and lower_bounded
+    def __eq__(self, other):
+        return (self._earliest == other._earliest) and (self._latest == other._latest)
 
 
-def days_ago(days, datetime=True):
+def days_ago(days, give_datetime=True):
     delta = datetime.timedelta(days=days)
     dt = datetime.datetime.now() - delta
-    if datetime:
+    if give_datetime:
         return dt
     else:
         return dt.date()
 
 
-def days_ahead(days, datetime=True):
+def days_ahead(days, give_datetime=True):
     delta = datetime.timedelta(days=days)
-    dt = datetime.datetime.now() - delta
-    if datetime:
+    dt = datetime.datetime.now() + delta
+    if give_datetime:
         return dt
     else:
         return dt.date()
