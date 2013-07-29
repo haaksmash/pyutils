@@ -16,6 +16,7 @@ def date_from_string(string, format_string=None):
             "%Y-%m-%d",
             "%m-%d-%Y",
             "%m/%d/%Y",
+            "%d/%m/%Y",
         ]
 
     for format in format_string:
@@ -81,6 +82,13 @@ class TimePeriod(object):
 
     def __eq__(self, other):
         return (self._earliest == other._earliest) and (self._latest == other._latest)
+
+    def __repr__(self):
+        return "<{}: {}-{}>".format(
+            self.__class__.__name__,
+            self._earliest,
+            self._latest,
+        )
 
 
 def days_ago(days, give_datetime=True):

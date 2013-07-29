@@ -16,7 +16,7 @@ def from_keyed_iterable(iterable, key, filter_func=None):
         try:
             k = getattr(element, key)
         except AttributeError:
-            raise RuntimeError("{} does not have the key attribute:{}".format(
+            raise RuntimeError("{} does not have the keyed attribute: {}".format(
                 element, key
             ))
 
@@ -62,13 +62,20 @@ def subtract(dict_a, dict_b, strict=False):
 
 
 WinnowedResult = namedtuple("WinnowedResult", ['has', 'has_not'])
-def winnow_by_keys(dct, keys):
-    """separates a dict into has-keys and not-has-keys pairs"""
+def winnow_by_keys(dct, keys=None, filter_func=None):
+    """separates a dict into has-keys and not-has-keys pairs, using either
+    a list of keys or a filtering function."""
     has = {}
     has_not = {}
 
     for key in dct:
-        if key in keys:
+        key_passes_check = False
+        if keys is not None:
+            key_passes_check = key in keys
+        elif filter_func is not None:
+            key_passes_check = filter_func(key)
+
+        if key_passes_check:
             has[key] = dct[key]
         else:
             has_not[key] = dct[key]
