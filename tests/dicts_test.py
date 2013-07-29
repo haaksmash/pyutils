@@ -115,36 +115,67 @@ class SubtractTestCase(T.TestCase):
 
 
 class WinnowByKeysTestCase(T.TestCase):
-    def test(self):
-        dct = {
+    @T.setup
+    def dict_create(self):
+        self.dct = {
             1: None,
             2: True,
             3: False,
             4: int,
         }
 
-        result = dicts.winnow_by_keys(dct, keys=[1, 4])
+    def test(self):
+
+        result = dicts.winnow_by_keys(self.dct, keys=[1, 4])
 
         T.assert_equal(result.has, {1: None, 4: int})
         T.assert_equal(result.has_not, {2: True, 3: False})
 
     def test_filter_func(self):
-        dct = {
-            1: None,
-            2: True,
-            3: False,
-            4: int,
-        }
 
-        result = dicts.winnow_by_keys(dct, filter_func=lambda k: k % 2 == 0)
+        result = dicts.winnow_by_keys(self.dct, filter_func=lambda k: k % 2 == 0)
 
         T.assert_equal(result.has, {2: True, 4: int})
         T.assert_equal(result.has_not, {1: None, 3: False})
 
 
 class IntersectionTestCase(T.TestCase):
-    pass
+    @T.setup
+    def dict_create(self):
+        self.dict_a = {
+            1: None,
+            2: True,
+            3: False,
+            4: int,
+        }
+
+        self.dict_b = {
+            1: None,
+            3: False,
+            4: bool,
+            5: True,
+        }
+
+    def test(self):
+        T.assert_equal(dicts.intersection(self.dict_a, self.dict_b), {1: None, 3: False})
+
+    def test_not_strict(self):
+        T.assert_equal(dicts.intersection(self.dict_a, self.dict_b, False), {1: None, 3: False, 4: int})
 
 
 class SetDefaultsTestCase(T.TestCase):
-    pass
+    def test(self):
+        target = {
+            1: None,
+            4: False,
+        }
+
+        defaults = {
+            2: True,
+            3: int,
+            4: "RED",
+        }
+
+        result = dicts.setdefaults(target, defaults)
+
+        T.assert_equal(result,{1: None, 2: True, 3: int, 4: False})
