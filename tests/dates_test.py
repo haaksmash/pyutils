@@ -30,13 +30,14 @@ class DateFromStringTestCase(T.TestCase):
                 dates.date_from_string(string, format_string)
 
     def test_default_formats(self):
-        expected_date = date(2013, 5, 10)
+        expected_date = date(2013, 5, 15)
 
         ENABLED_DEFAULTS = (
-            "2013-5-10",
-            "2013-05-10",
-            "5-10-2013",
-            "5/10/2013",
+            "2013-5-15",
+            "2013-05-15",
+            "5-15-2013",
+            "5/15/2013",
+            "15/5/2013",
         )
 
         for string in ENABLED_DEFAULTS:
