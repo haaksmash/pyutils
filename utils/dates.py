@@ -16,6 +16,7 @@ def date_from_string(string, format_string=None):
             "%Y-%m-%d",
             "%m-%d-%Y",
             "%m/%d/%Y",
+            "%d/%m/%Y",
         ]
 
     for format in format_string:
