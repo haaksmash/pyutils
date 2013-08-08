@@ -7,3 +7,21 @@ library?"
 
 Well, we perhaps can't answer that question. But we can collect those functions
 into a centralized place!
+
+Provided things
++++++++++++++++
+
+Utils is broken up into broad swathes of functionality, to ease the task of
+remembering where exactly something lives.
+
+dicts
+~~~~~
+
+lists
+~~~~~
+
+bools
+~~~~~
+
+dates
+~~~~~
