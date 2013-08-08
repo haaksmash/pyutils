@@ -3,6 +3,8 @@
 Things you always wished you could do more succinctly!
 """
 from collections import namedtuple
+from limited_dict import LimitedDict
+from chained_dict import ChainedDict
 
 
 def from_keyed_iterable(iterable, key, filter_func=None):
