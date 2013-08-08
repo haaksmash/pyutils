@@ -1,5 +1,5 @@
 Utils
-~~~~~~~
+=====
 
 Sometimes you write a function over and over again; sometimes you look up at
 the ceiling and ask "why, Guido, why isn't this included in the standard
@@ -15,12 +15,12 @@ Utils is broken up into broad swathes of functionality, to ease the task of
 remembering where exactly something lives.
 
 dicts
-~~~~~
+-----
 
 intersections, differences, winnowing,...
 
 lists
-~~~~~
+-----
 
 flatten and unlisting
 
