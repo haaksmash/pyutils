@@ -17,7 +17,7 @@ remembering where exactly something lives.
 dicts
 -----
 
-intersections, differences, winnowing,...
+intersections, differences, winnowing, a few specialized dicts...
 
 lists
 -----
