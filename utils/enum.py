@@ -1,13 +1,13 @@
 """Who hasn't needed a good, old-fashioned enum now and then?"""
 
 
-class enum(object):
+class _enum(object):
 
-    def __init__(self, *args, **kwargs):
+    def __call__(self, enum_name, *args, **kwargs):
         if args and kwargs:
-            raise TypeError("Enums can only be made from args XOR kwargs, not both")
+            raise TypeError("enums can only be made from args XOR kwargs")
 
-        self.__enum_items = {}
+        enum_items = {}
 
         counter = 0
         for name, val in kwargs.iteritems():
@@ -17,24 +17,20 @@ class enum(object):
             elif isinstance(val, int):
                 counter = val + 1
 
-            self.__enum_items[name] = EnumItem(self, name, val)
+            enum_items[name] = val
 
         for val, name in enumerate(args, start=counter):
-            self.__enum_items[name] = EnumItem(self, name, val)
+            enum_items[name] = val
 
-    def __getattr__(self, attr_name):
-        if attr_name in self.__enum_items:
-            return self.__enum_items[attr_name]
-
-        return super(enum, self).__getattr__(attr_name)
+        return type(enum_name, (Enum,), enum_items)
 
     @classmethod
-    def from_iterable(cls, iterable):
-        return cls(*iterable)
+    def from_iterable(self, iterable):
+        return self(*iterable)
 
     @classmethod
-    def from_dict(cls, dct):
-        return cls(**dct)
+    def from_dict(self, dct):
+        return self(**dct)
 
     def __iter__(self):
         for k, v in self.__enum_items.iteritems():
@@ -42,6 +38,7 @@ class enum(object):
 
     def __repr__(self):
         return "<{}: {}>".format(self.__class__.__name__, self.__enum_items.values())
+enum = _enum()
 
 
 class EnumItem(object):
@@ -56,8 +53,8 @@ class EnumItem(object):
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            if self.parent != other.parent:
-                raise ValueError("Can't compare EnumItems from different enums")
+            if self.parent.is_strict and self.parent != other.parent:
+                raise ValueError("can't compare EnumItems from different enums")
             return self.value == other.value
 
         return self.value == other
@@ -77,26 +74,49 @@ class EnumItem(object):
 
 class _EnumMeta(type):
     def __new__(cls, name, bases, attr_dict):
-        print bases
 
         options = attr_dict.pop('Options', object)
 
+        attr_dict['__strict__'] = getattr(options, "strict_compare", True)
+
+
+        new_enum = super(_EnumMeta, cls).__new__(cls, name, bases, {})
+
+
+        enum_items = {}
+
         for attr_name, attr_value in attr_dict.items():
             if attr_name.startswith('__'):
+                super(_EnumMeta, cls).__setattr__(new_enum, attr_name, attr_value)
                 continue
 
             if getattr(options, 'force_uppercase', False):
+                attr_dict.pop(attr_name)
                 attr_name = attr_name.upper()
-            attr_dict[attr_name] = EnumItem(name, attr_name, attr_value)
+
+            enum_item = EnumItem(new_enum, attr_name, attr_value)
+
+            enum_items[attr_name] = enum_item
+            super(_EnumMeta, cls).__setattr__(new_enum, attr_name, enum_item)
 
         if getattr(options, "frozen", False):
-            attr_dict['__frozen__'] = True
+            super(_EnumMeta, cls).__setattr__(new_enum, '__frozen__', True)
 
-        return super(_EnumMeta, cls).__new__(cls, name, bases, attr_dict)
+        super(_EnumMeta, cls).__setattr__(new_enum, '__enum_item_map__', enum_items)
 
-    def __setattr__(self, name, val):
-        if getattr(self, "__frozen__"):
+        return new_enum
+
+    def __setattr__(cls, name, val):
+        if getattr(cls, "__frozen__", False):
             raise TypeError("can't set attributes on a frozen enum")
+
+    @property
+    def is_strict(cls):
+        return getattr(cls, "__strict__", True)
+
+    def get_name_value_map(cls):
+        e = cls.__enum_item_map__
+        return dict((e[i].name, e[i].value) for i in e)
 
 
 class Enum(object):
