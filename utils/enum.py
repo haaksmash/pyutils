@@ -47,3 +47,7 @@ class enum(object):
             values += ["{}={}".format(k, v)]
         end = ">"
         return start + ", ".join(values) + end
+
+
+class EnumItem(object):
+    pass
