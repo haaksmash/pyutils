@@ -2,14 +2,17 @@ from collections import MutableMapping
 
 
 class LimitedDict(MutableMapping):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, args=None, **kwargs):
         keys = kwargs.pop('keys', [])
         self.__keys = keys
 
-        kwargs.update((key, val) for key, val in args)
-        self.__data = kwargs
+        self.__data = {}
 
-        super(LimitedDict, self).__init__(*args, **kwargs)
+        if args:
+            kwargs.update((key, val) for key, val in args)
+
+        for key, val in kwargs.iteritems():
+            self[key] = val
 
     def __setitem__(self, key, val):
         if key not in self.__keys:
@@ -30,7 +33,7 @@ class LimitedDict(MutableMapping):
         return len(self.__data)
 
     def __repr__(self):
-        return "{}({}, {})".format(self.__class__.__name__, self.__keys, self.__data)
+        return "{}({}, {})".format(self.__class__.__name__, self.defined_keys, self.__data)
 
     @property
     def defined_keys(self):

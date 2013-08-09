@@ -1,4 +1,3 @@
-import mock
 import testify as T
 
 from utils.dicts.chained_dict import ChainedDict
