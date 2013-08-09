@@ -25,11 +25,11 @@ lists
 flatten and unlisting
 
 bools
-~~~~~
+-----
 
 currently only provides an ``xor`` function.
 
 dates
-~~~~~
+-----
 
 TimePeriod, from string, ``to_datetime``, and ``days_ago`` and ``_ahead``
