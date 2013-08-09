@@ -1,7 +1,3 @@
-"""Helper functinos for dealing with dicts.
-
-Things you always wished you could do more succinctly!
-"""
 from collections import namedtuple
 
 
