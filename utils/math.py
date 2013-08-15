@@ -1,8 +1,10 @@
+import collections
 import operator
 
 
-def prod(*args, **kwargs):
+def product(sequence, initial=1):
     """like the built-in sum, but for multiplication."""
-    initial = kwargs.pop('initial', 1)
+    if not isinstance(sequence, collections.Iterable):
+        raise TypeError("'{}' object is not iterable".format(type(sequence).__name__))
 
-    return reduce(operator.mul, args, initial)
+    return reduce(operator.mul, sequence, initial)
