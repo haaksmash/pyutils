@@ -24,11 +24,9 @@ class _enum(object):
 
         return type(enum_name, (Enum,), enum_items)
 
-    @classmethod
     def from_iterable(self, iterable):
         return self(*iterable)
 
-    @classmethod
     def from_dict(self, dct):
         return self(**dct)
 
