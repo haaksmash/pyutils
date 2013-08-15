@@ -77,9 +77,7 @@ class _EnumMeta(type):
 
         attr_dict['__strict__'] = getattr(options, "strict_compare", True)
 
-
         new_enum = super(_EnumMeta, cls).__new__(cls, name, bases, {})
-
 
         enum_items = {}
 
@@ -97,8 +95,15 @@ class _EnumMeta(type):
             enum_items[attr_name] = enum_item
             super(_EnumMeta, cls).__setattr__(new_enum, attr_name, enum_item)
 
-        if getattr(options, "frozen", False):
+        if getattr(options, "frozen", True):
             super(_EnumMeta, cls).__setattr__(new_enum, '__frozen__', True)
+        else:
+            super(_EnumMeta, cls).__setattr__(new_enum, '__frozen__', False)
+
+        if getattr(options, "strict", False):
+            super(_EnumMeta, cls).__setattr__(new_enum, '__strict__', True)
+        else:
+            super(_EnumMeta, cls).__setattr__(new_enum, '__strict__', False)
 
         super(_EnumMeta, cls).__setattr__(new_enum, '__enum_item_map__', enum_items)
 
@@ -107,6 +112,12 @@ class _EnumMeta(type):
     def __setattr__(cls, name, val):
         if getattr(cls, "__frozen__", False):
             raise TypeError("can't set attributes on a frozen enum")
+
+        if name in cls.__enum_item_map__:
+            val =  EnumItem(cls, name, val)
+            cls.__enum_item_map__[name] = val
+
+        super(_EnumMeta, cls).__setattr__(name, val)
 
     @property
     def is_strict(cls):
