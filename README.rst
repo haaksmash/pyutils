@@ -38,6 +38,7 @@ Python doesn't have a built-in way to define an enum, so this module provides (w
     ColorsAlso = enum.enum("RED", "GREEN")
 
 Once defined, use is straightforward:
+
 .. code-block:: python
 
     >>> Colors
