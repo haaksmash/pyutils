@@ -5,7 +5,7 @@ from setuptools import find_packages
 
 setup(
     name='utils',
-    version='0.3',
+    version='0.4',
     description='Python Distribution Utilities',
     long_description=open("README.txt").read(),
     author='Haak Saxberg',
