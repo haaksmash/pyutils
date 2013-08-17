@@ -14,6 +14,29 @@ Provided things
 Utils is broken up into broad swathes of functionality, to ease the task of
 remembering where exactly something lives.
 
+enum
+----
+
+Python doesn't have a built-in way to define an enum, so this module provides (what I think) is a pretty clean way to go about them.
+
+.. code-block:: python
+
+    from utils import enum
+
+    class Colors(enum.Enum):
+        RED = 0
+        GREEN = 1
+
+        class Options:
+            frozen = True
+
+    ColorsAlso = enum.enum("RED", "GREEN")
+
+math
+----
+
+Currently only has the multiplicative analogue of the built-in ``sum``.
+
 dicts
 -----
 
@@ -32,4 +55,4 @@ currently only provides an ``xor`` function.
 dates
 -----
 
-TimePeriod, from string, ``to_datetime``, and ``days_ago`` and ``_ahead``
+``TimePeriod``, from string, ``to_datetime``, and ``days_ago`` and ``_ahead``
