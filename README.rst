@@ -79,4 +79,28 @@ currently only provides an ``xor`` function.
 dates
 -----
 
-``TimePeriod``, from string, ``to_datetime``, and ``days_ago`` and ``_ahead``
+Mostly cool for the ``TimePeriod`` classes:
+
+.. code-block:: python
+
+    >>> from datetime import date # will also work with datetimes
+    >>> time_period = TimePeriod(date(2013, 5, 10), date(2013, 8, 11))
+    >>> time_period
+    <TimePeriod: 2013-05-10 00:00:00-2013-08-11 23:59:59>
+    >>> date(2013, 6, 12) in time_period
+    True
+    >>> other_time_period = TimePeriod(date(2013, 6, 1), date(2013, 6, 30))
+    >>> other_time_period in time_period
+    True
+    >>> another_time_period = TimePeriod(date(2013, 8, 1), date(2013, 8, 30))
+    >>> time_period.overlaps(another_time_period)
+    True
+    >>> TimePeriod.get_containing_period(time_period, another_time_period)
+    <TimePeriod: 2013-05-08 00:00:00-2013-08-30 23:59:59>
+
+
+and so on and so forth. There's also a ``DiscontinousTimePeriod`` class, which
+stores a collection of TimePeriods.
+
+There's also helper functions for common operations like ``days_ahead`` and
+``days_ago``, which pretty much do what they say on the tin.
