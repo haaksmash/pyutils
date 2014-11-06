@@ -104,3 +104,32 @@ stores a collection of TimePeriods.
 
 There's also helper functions for common operations like ``days_ahead`` and
 ``days_ago``, which pretty much do what they say on the tin.
+
+objects
+-------
+
+provides ``get_attr``, which is really just a convenient way to do deep ``getattr`` chaining:
+
+.. code-block:: python
+
+    >>> get_attr(complicated, 'this.is.a.deep.string', default=None)
+    "the deep string"  # or None, if anything in the lookup chain didn't exist
+
+There's also an ``immutable`` utility, which will wrap an object and preven all attribute changes, 
+recursively by default. Any attempt to set attributes on the wrapped object will raise an ``AttributeError``:
+
+.. code-block:: python
+
+    >>> imm = immutable(something)
+    >>> imm
+    <Immutable Something: <Something>>
+    >>> imm.red
+    <Immutable SomethingElse: <SomethingElse: red>>
+    >>> imm.red = SomethingElse('blue')
+    # ...
+    AttributeError: This object has been marked as immutable; you cannot set its attributes.
+    >>> something.red = SomethingElse('blue')
+    >>> imm.red
+    <Immutable SomethingElse: <SomethingElse: blue>>
+
+You can toggle the recursive immutability by specifying the 'recursive' flag.
