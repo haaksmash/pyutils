@@ -179,8 +179,8 @@ class TimePeriodContainsTestCase(T.TestCase):
         self.contains_past = dates.TimePeriod(None, date.today() - timedelta(days=1))
         self.contains_future = dates.TimePeriod(date.today() + timedelta(days=1), None)
         self.contains_month = dates.TimePeriod(
-            date(2013, date.today().month, 1),
-            date(2013, date.today().month + 1, 1) - timedelta(days=1),
+            date(date.today().year, date.today().month, 1),
+            date(date.today().year, date.today().month + 1, 1) - timedelta(days=1),
         )
 
     def test_verbose_function(self):
