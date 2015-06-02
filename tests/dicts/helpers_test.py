@@ -1,10 +1,10 @@
 import mock
-import testify as T
+import pytest
 
 from utils.dicts import helpers
 
 
-class FromKeyedIterableTestCase(T.TestCase):
+class FromKeyedIterableTestCase(object):
     def test_basic(self):
         iterable = [
             mock.Mock(key=12),
@@ -19,7 +19,7 @@ class FromKeyedIterableTestCase(T.TestCase):
             "blue": [iterable[3]],
         }
 
-        T.assert_equal(helpers.from_keyed_iterable(iterable, "key"), expected_dict)
+        assert helpers.from_keyed_iterable(iterable, "key") == expected_dict
 
     def test_filter_func(self):
         iterable = [
@@ -36,10 +36,10 @@ class FromKeyedIterableTestCase(T.TestCase):
             "blue": [iterable[3]],
         }
 
-        T.assert_equal(helpers.from_keyed_iterable(iterable, "key", filter_func), expected_dict)
+        assert helpers.from_keyed_iterable(iterable, "key", filter_func) == expected_dict
 
 
-class SubtractByKeyTestCase(T.TestCase):
+class SubtractByKeyTestCase(object):
     def test(self):
         dict_a = {
             1: None,
@@ -57,25 +57,25 @@ class SubtractByKeyTestCase(T.TestCase):
             3: None,
         }
 
-        T.assert_equal(helpers.subtract_by_key(dict_a, dict_b), expected_dict)
+        assert helpers.subtract_by_key(dict_a, dict_b) == expected_dict
 
     def test_empty(self):
         dict_a = {}
         dict_b = {1: None, 5: None}
 
-        T.assert_equal(helpers.subtract_by_key(dict_a, dict_b), {})
+        assert helpers.subtract_by_key(dict_a, dict_b) == {}
 
         dict_a = {1: None, 5: None}
         dict_b = {}
 
-        T.assert_equal(helpers.subtract_by_key(dict_a, dict_b), dict_a)
+        assert helpers.subtract_by_key(dict_a, dict_b) == dict_a
 
 
-class SubtractTestCase(T.TestCase):
+class SubtractTestCase(object):
     @mock.patch("utils.dicts.helpers.subtract_by_key")
     def test_not_strict(self, sbk_patch):
         sbk_patch.return_value = mock.sentinel
-        T.assert_equal(helpers.subtract(None, None, False), sbk_patch.return_value)
+        assert helpers.subtract(None, None, False) == sbk_patch.return_value
         sbk_patch.assert_called_once_with(None, None)
 
     def test(self):
@@ -98,7 +98,7 @@ class SubtractTestCase(T.TestCase):
             3: None,
         }
 
-        T.assert_equal(helpers.subtract(dict_a, dict_b, True), expected_dict)
+        assert helpers.subtract(dict_a, dict_b, True) == expected_dict
 
     def test_empty(self):
         dict_a = {}
@@ -106,64 +106,66 @@ class SubtractTestCase(T.TestCase):
 
         dict_b = {}
 
-        T.assert_equal(helpers.subtract(dict_a, dict_b, True), {})
+        assert helpers.subtract(dict_a, dict_b, True) == {}
 
         dict_a = {1: None, 5: None}
         dict_b = {}
 
-        T.assert_equal(helpers.subtract(dict_a, dict_b, True), dict_a)
+        assert helpers.subtract(dict_a, dict_b, True) == dict_a
 
 
-class WinnowByKeysTestCase(T.TestCase):
-    @T.setup
-    def dict_create(self):
-        self.dct = {
+class WinnowByKeysTestCase(object):
+    @pytest.fixture
+    def dct(self):
+        return {
             1: None,
             2: True,
             3: False,
             4: int,
         }
 
-    def test(self):
+    def test(self, dct):
 
-        result = helpers.winnow_by_keys(self.dct, keys=[1, 4])
+        result = helpers.winnow_by_keys(dct, keys=[1, 4])
 
-        T.assert_equal(result.has, {1: None, 4: int})
-        T.assert_equal(result.has_not, {2: True, 3: False})
+        assert result.has == {1: None, 4: int}
+        assert result.has_not == {2: True, 3: False}
 
-    def test_filter_func(self):
+    def test_filter_func(self, dct):
 
-        result = helpers.winnow_by_keys(self.dct, filter_func=lambda k: k % 2 == 0)
+        result = helpers.winnow_by_keys(dct, filter_func=lambda k: k % 2 == 0)
 
-        T.assert_equal(result.has, {2: True, 4: int})
-        T.assert_equal(result.has_not, {1: None, 3: False})
+        assert result.has == {2: True, 4: int}
+        assert result.has_not == {1: None, 3: False}
 
 
-class IntersectionTestCase(T.TestCase):
-    @T.setup
-    def dict_create(self):
-        self.dict_a = {
+class IntersectionTestCase(object):
+    @pytest.fixture
+    def dict_a(self):
+        return {
             1: None,
             2: True,
             3: False,
             4: int,
         }
 
-        self.dict_b = {
+    @pytest.fixture
+    def dict_b(self):
+        return {
             1: None,
             3: False,
             4: bool,
             5: True,
         }
 
-    def test(self):
-        T.assert_equal(helpers.intersection(self.dict_a, self.dict_b), {1: None, 3: False})
+    def test(self, dict_a, dict_b):
+        assert helpers.intersection(dict_a, dict_b) == {1: None, 3: False}
 
-    def test_not_strict(self):
-        T.assert_equal(helpers.intersection(self.dict_a, self.dict_b, False), {1: None, 3: False, 4: int})
+    def test_not_strict(self, dict_a, dict_b):
+        assert helpers.intersection(dict_a, dict_b, False) == {1: None, 3: False, 4: int}
 
 
-class SetDefaultsTestCase(T.TestCase):
+class SetDefaultsTestCase(object):
     def test(self):
         target = {
             1: None,
@@ -178,4 +180,4 @@ class SetDefaultsTestCase(T.TestCase):
 
         result = helpers.setdefaults(target, defaults)
 
-        T.assert_equal(result,{1: None, 2: True, 3: int, 4: False})
+        assert result == {1: None, 2: True, 3: int, 4: False}

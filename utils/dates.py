@@ -119,6 +119,9 @@ class TimePeriod(object):
     def __eq__(self, other):
         return (self._earliest == other._earliest) and (self._latest == other._latest)
 
+    def __hash__(self):
+        return hash((self._earliest, self._latest))
+
     def __repr__(self):
         return "<{}: {}-{}>".format(
             self.__class__.__name__,

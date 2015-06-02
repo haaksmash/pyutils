@@ -1,12 +1,12 @@
 from datetime import date, datetime, timedelta
 
 import mock
-import testify as T
+import pytest
 
 from utils import dates
 
 
-class DateFromStringTestCase(T.TestCase):
+class DateFromStringTestCase(object):
 
     def test_format_string_parsing(self):
         expected_date = date(2013, 5, 10)
@@ -20,14 +20,14 @@ class DateFromStringTestCase(T.TestCase):
 
         for string, format_string in STRING_FORMAT_PAIRS:
             produced_date = dates.date_from_string(string, format_string)
-            T.assert_equal(produced_date, expected_date)
+            assert produced_date == expected_date
 
         BAD_FORMAT_PAIRS = (
             ("2013-5-10", "%m/%d/%Y"),
         )
 
         for string, format_string in BAD_FORMAT_PAIRS:
-            with T.assert_raises(ValueError):
+            with pytest.raises(ValueError):
                 dates.date_from_string(string, format_string)
 
     def test_default_formats(self):
@@ -43,10 +43,10 @@ class DateFromStringTestCase(T.TestCase):
 
         for string in ENABLED_DEFAULTS:
             produced_date = dates.date_from_string(string)
-            T.assert_equal(produced_date, expected_date)
+            assert produced_date == expected_date
 
 
-class ToDatetimeTestCase(T.TestCase):
+class ToDatetimeTestCase(object):
 
     def test_conversion(self):
         provided_date = date(2013, 5, 10)
@@ -54,16 +54,16 @@ class ToDatetimeTestCase(T.TestCase):
 
         produced_datetime = dates.to_datetime(provided_date)
 
-        T.assert_equal(produced_datetime, expected_datetime)
+        assert produced_datetime == expected_datetime
 
     def test_given_datetime(self):
         provided_datetime = datetime(2013, 5, 10)
         produced_datetime = dates.to_datetime(provided_datetime)
 
-        T.assert_equal(produced_datetime, provided_datetime)
+        assert produced_datetime == provided_datetime
 
 
-class TimePeriodTestCase(T.TestCase):
+class TimePeriodTestCase(object):
 
     def test_initialization(self):
         # test all valid earliest and latest combos
@@ -88,14 +88,14 @@ class TimePeriodTestCase(T.TestCase):
         )
 
         for earliest, latest in BAD_EARLIEST_LATEST:
-            with T.assert_raises(ValueError):
+            with pytest.raises(ValueError):
                 dates.TimePeriod(earliest, latest)
 
     def test_eq(self):
-        T.assert_equal(dates.TimePeriod(None, None), dates.TimePeriod(None, None))
-        T.assert_equal(dates.TimePeriod(date.today(), None), dates.TimePeriod(date.today(), None))
+        assert dates.TimePeriod(None, None) == dates.TimePeriod(None, None)
+        assert dates.TimePeriod(date.today(), None) == dates.TimePeriod(date.today(), None)
 
-        T.assert_not_equal(dates.TimePeriod(None, None), dates.TimePeriod(date.today(), None))
+        assert dates.TimePeriod(None, None) != dates.TimePeriod(date.today(), None)
 
     def test_get_containing_period_no_none(self):
         periods = [
@@ -154,8 +154,8 @@ class TimePeriodTestCase(T.TestCase):
             date(2013, 5, 21)
         )
 
-        T.assert_equal(tp1.overlaps(tp2), False)
-        T.assert_equal(tp2.overlaps(tp1), False)
+        assert not tp1.overlaps(tp2)
+        assert not tp2.overlaps(tp1)
 
     def test_overlaps_overlap(self):
         tp1 = dates.TimePeriod(
@@ -167,18 +167,27 @@ class TimePeriodTestCase(T.TestCase):
             date(2013, 5, 21)
         )
 
-        T.assert_equal(tp1.overlaps(tp2), True)
-        T.assert_equal(tp2.overlaps(tp1), True)
+        assert tp1.overlaps(tp2)
+        assert tp2.overlaps(tp1)
 
 
-class TimePeriodContainsTestCase(T.TestCase):
+class TimePeriodContainsTestCase(object):
 
-    @T.setup
-    def create_periods(self):
-        self.contains_all = dates.TimePeriod(None, None)
-        self.contains_past = dates.TimePeriod(None, date.today() - timedelta(days=1))
-        self.contains_future = dates.TimePeriod(date.today() + timedelta(days=1), None)
-        self.contains_month = dates.TimePeriod(
+    @pytest.fixture
+    def contains_all(self):
+        return dates.TimePeriod(None, None)
+
+    @pytest.fixture
+    def contains_future(self):
+        return dates.TimePeriod(date.today() + timedelta(days=1), None)
+
+    @pytest.fixture
+    def contains_past(self):
+        return dates.TimePeriod(None, date.today() - timedelta(days=1))
+
+    @pytest.fixture
+    def contains_month(self):
+        return dates.TimePeriod(
             date(date.today().year, date.today().month, 1),
             date(date.today().year, date.today().month + 1, 1) - timedelta(days=1),
         )
@@ -189,34 +198,34 @@ class TimePeriodContainsTestCase(T.TestCase):
 
             cpatch.assert_called_once_with(mock.sentinel.CONTAIN)
 
-    def test_all_contains_datetime(self):
-        T.assert_in(datetime.min, self.contains_all)
-        T.assert_in(datetime.max, self.contains_all)
-        T.assert_in(date.today(), self.contains_all)
+    def test_all_contains_datetime(self, contains_all):
+        assert datetime.min in contains_all
+        assert datetime.max in contains_all
+        assert date.today() in contains_all
 
-    def test_past_contains_datetime(self):
-        T.assert_in(datetime.min, self.contains_past)
-        T.assert_not_in(datetime.max, self.contains_past)
-        T.assert_not_in(date.today(), self.contains_past)
+    def test_past_contains_datetime(self, contains_past):
+        assert datetime.min in contains_past
+        assert datetime.max not in contains_past
+        assert date.today() not in contains_past
 
-    def test_future_contains_datetime(self):
-        T.assert_not_in(datetime.min, self.contains_future)
-        T.assert_in(datetime.max, self.contains_future)
-        T.assert_not_in(date.today(), self.contains_future)
+    def test_future_contains_datetime(self, contains_future):
+        assert datetime.min not in contains_future
+        assert datetime.max in contains_future
+        assert date.today() not in contains_future
 
-    def test_month_contains_datetime(self):
-        T.assert_not_in(datetime.min, self.contains_month)
-        T.assert_not_in(datetime.max, self.contains_month)
-        T.assert_in(date.today(), self.contains_month)
+    def test_month_contains_datetime(self, contains_month):
+        assert datetime.min not in contains_month
+        assert datetime.max not in contains_month
+        assert date.today() in contains_month
 
-    def test_contains_timeperiod(self):
-        T.assert_in(self.contains_past, self.contains_all)
-        T.assert_in(self.contains_month, self.contains_all)
-        T.assert_in(self.contains_month, self.contains_month)
-        T.assert_not_in(self.contains_all, self.contains_month)
+    def test_contains_timeperiod(self, contains_past, contains_all, contains_month):
+        assert contains_past in contains_all
+        assert contains_month in contains_all
+        assert contains_month in contains_month
+        assert contains_all not in contains_month
 
 
-class DiscontinuousTimePeriodTestCase(T.TestCase):
+class DiscontinuousTimePeriodTestCase(object):
 
     def test_initialization_all_noncontinous(self):
         periods = [
@@ -228,7 +237,7 @@ class DiscontinuousTimePeriodTestCase(T.TestCase):
             *periods
         )
 
-        T.assert_equal(set(dtp._periods), set(periods))
+        assert set(dtp._periods) == set(periods)
 
     def test_initialization_not_some_contained(self):
         periods = [
@@ -240,7 +249,7 @@ class DiscontinuousTimePeriodTestCase(T.TestCase):
             *periods
         )
 
-        T.assert_equal(dtp._periods, [periods[1]])
+        assert dtp._periods == [periods[1]]
 
     def test_initialization_overlaps(self):
         periods = [
@@ -252,22 +261,18 @@ class DiscontinuousTimePeriodTestCase(T.TestCase):
             *periods
         )
 
-        T.assert_equal(dtp._periods, [dates.TimePeriod(date(2013, 5, 8), date(2013, 5, 16))])
+        assert dtp._periods == [dates.TimePeriod(date(2013, 5, 8), date(2013, 5, 16))]
 
 
-class DaysAgoTestCase(T.TestCase):
+class DaysAgoTestCase(object):
     def test(self):
         DAYS = 15
         expected_result = datetime.now() - timedelta(days=DAYS)
-        T.assert_equal(dates.days_ago(DAYS, False), expected_result.date())
+        assert dates.days_ago(DAYS, False) == expected_result.date()
 
 
-class DaysAheadTestCase(T.TestCase):
+class DaysAheadTestCase(object):
     def test(self):
         DAYS = 15
         expected_result = datetime.now() + timedelta(days=DAYS)
-        T.assert_equal(dates.days_ahead(DAYS, False), expected_result.date())
-
-
-if __name__ == "__main__":
-    T.run()
+        assert dates.days_ahead(DAYS, False) == expected_result.date()

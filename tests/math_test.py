@@ -1,12 +1,12 @@
-import testify as T
+import pytest
 
 from utils import math
 
 
-class ProductTestCase(T.TestCase):
+class ProductTestCase(object):
     def test_empty_sequence(self):
-        T.assert_equal(math.product([]), 1)
+        assert math.product([]) == 1
 
     def test_non_iterable(self):
-        with T.assert_raises(TypeError):
+        with pytest.raises(TypeError):
             math.product(None)

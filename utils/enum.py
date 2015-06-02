@@ -10,7 +10,7 @@ class _enum(object):
         enum_items = {}
 
         counter = 0
-        for name, val in kwargs.iteritems():
+        for name, val in kwargs.items():
             if val is None:
                 val = counter
                 counter += 1
@@ -31,7 +31,7 @@ class _enum(object):
         return self(**dct)
 
     def __iter__(self):
-        for k, v in self.__enum_items.iteritems():
+        for k, v in self.__enum_items.items():
             yield k, v
 
     def __repr__(self):
@@ -128,5 +128,5 @@ class _EnumMeta(type):
         return dict((e[i].name, e[i].value) for i in e)
 
 
-class Enum(object):
-    __metaclass__ = _EnumMeta
+class Enum(_EnumMeta("EnumBase", (object, ), {})):
+    pass

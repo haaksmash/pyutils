@@ -11,7 +11,7 @@ class LimitedDict(MutableMapping):
         if args:
             kwargs.update((key, val) for key, val in args)
 
-        for key, val in kwargs.iteritems():
+        for key, val in kwargs.items():
             self[key] = val
 
     def __setitem__(self, key, val):
