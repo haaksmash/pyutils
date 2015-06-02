@@ -1,10 +1,15 @@
-import mock
-import testify as T
+try:
+    from unittest import mock as mock
+except ImportError:
+    import mock as mock
+
+import pytest
 
 from utils import enum
 
 
-class EnumItemTestCase(T.TestCase):
+class EnumItemTestCase(object):
+
     def test_equality(self):
         parent = mock.Mock()
         parent2 = mock.Mock()
@@ -31,7 +36,7 @@ class EnumItemTestCase(T.TestCase):
         ei = enum.EnumItem(parent, "name", mock.ANY)
         ei2 = enum.EnumItem(parent2, "name", mock.ANY)
 
-        with T.assert_raises(ValueError):
+        with pytest.raises(ValueError):
             ei == ei2
 
     def test_equality_with_primitive(self):
@@ -44,10 +49,14 @@ class EnumItemTestCase(T.TestCase):
 
         value.__eq__.assert_called_once_with(1)
 
-class EnumClassTestCase(T.TestCase):
-    @T.setup
-    def create_enum(self):
-        self.enum_item_mock = mock.create_autospec(enum.EnumItem)
+class EnumClassTestCase(object):
+
+    @pytest.fixture
+    def enum_item_mock(self):
+        return mock.create_autospec(enum.EnumItem)
+
+    @pytest.fixture
+    def enum(self, enum_item_mock):
 
         class TestEnum(enum.Enum):
             FLAG_ONE = 1
@@ -55,38 +64,39 @@ class EnumClassTestCase(T.TestCase):
             FLAG_THREE = 3
             FLAG_TRUE = True
 
-        type.__setattr__(TestEnum, 'FLAG_MOCK', self.enum_item_mock)
-        TestEnum.__enum_item_map__["FLAG_MOCK"] = self.enum_item_mock
+        type.__setattr__(TestEnum, 'FLAG_MOCK', enum_item_mock)
+        TestEnum.__enum_item_map__["FLAG_MOCK"] = enum_item_mock
 
-        self.enum = TestEnum
+        return TestEnum
 
-    def test_attribute_acccess(self):
+    def test_attribute_acccess(self, enum, enum_item_mock):
         """Ensure that we're actually dealing with EnumItem instances"""
-        T.assert_is(self.enum.FLAG_MOCK, self.enum_item_mock)
+        assert enum.FLAG_MOCK is enum_item_mock
 
-    def test_attribute_set_fails(self):
+    def test_attribute_set_fails(self, enum):
         """Enums should default to frozen-type"""
-        with T.assert_raises(TypeError):
-            self.enum.FLAG_THREE = 4
+        with pytest.raises(TypeError):
+            enum.FLAG_THREE = 4
 
-    def test_name_value_map(self):
+    def test_name_value_map(self, enum_item_mock, enum):
         expected_map = {
             "FLAG_ONE": 1,
             "FLAG_TWO": 2,
             "FLAG_THREE": 3,
             "FLAG_TRUE": True,
-            self.enum_item_mock.name: self.enum_item_mock.value,
+            enum_item_mock.name: enum_item_mock.value,
         }
 
-        T.assert_equal(self.enum.get_name_value_map(), expected_map)
+        assert enum.get_name_value_map() == expected_map
 
-    def test_is_strict(self):
+    def test_is_strict(self, enum):
         """Enums should default to not-strict"""
-        T.assert_equal(self.enum.is_strict, False)
+        assert not enum.is_strict
 
-class UnFrozenEnumClassTestCase(T.TestCase):
-    @T.setup
-    def create_enum(self):
+class UnFrozenEnumClassTestCase(object):
+
+    @pytest.fixture
+    def enum(self):
         class TestEnum(enum.Enum):
             FLAG_ONE = 1
             FLAG_TWO = 2
@@ -96,17 +106,18 @@ class UnFrozenEnumClassTestCase(T.TestCase):
             class Options:
                 frozen = False
 
-        self.enum = TestEnum
+        return TestEnum
 
-    def test_attribute_set(self):
-        T.assert_equal(self.enum.FLAG_THREE, 3)
-        self.enum.FLAG_THREE = 4
-        T.assert_equal(self.enum.FLAG_THREE, 4)
+    def test_attribute_set(self, enum):
+        assert enum.FLAG_THREE == 3
+        enum.FLAG_THREE = 4
+        assert enum.FLAG_THREE == 4
 
 
-class StrictEnumClassTestCase(T.TestCase):
-    @T.setup
-    def create_enum(self):
+class StrictEnumClassTestCase(object):
+
+    @pytest.fixture
+    def enum(self):
         class TestEnum(enum.Enum):
             FLAG_ONE = 1
             FLAG_TWO = 2
@@ -116,37 +127,39 @@ class StrictEnumClassTestCase(T.TestCase):
             class Options:
                 strict = True
 
-        self.enum = TestEnum
+        return TestEnum
 
-    def test_is_strict(self):
+    def test_is_strict(self, enum):
         """Strict enums should report as such"""
-        T.assert_equal(self.enum.is_strict, True)
+        assert enum.is_strict
 
 
-class EnumFactoryTestCase(T.TestCase):
+class EnumFactoryTestCase(object):
+
     def test_creation(self):
         """Do we, in fact, create an Enum?"""
         new_enum = enum.enum("TestEnum")
 
-        T.assert_equal(issubclass(new_enum, enum.Enum), True)
-        T.assert_equal(new_enum.__name__, "TestEnum")
+        assert issubclass(new_enum, enum.Enum) == True
+        assert new_enum.__name__ == "TestEnum"
 
     def test_creation_with_args(self):
         """Test that args are used to create sequential EnumItems"""
         new_enum = enum.enum("TestEnum", "ZERO", "ONE")
 
-        T.assert_equal(isinstance(new_enum.ONE, enum.EnumItem), True)
-        T.assert_equal(new_enum.ZERO, 0)
-        T.assert_equal(new_enum.ONE, 1)
+        assert isinstance(new_enum.ONE, enum.EnumItem) == True
+        assert new_enum.ZERO == 0
+        assert new_enum.ONE == 1
 
     def test_creation_with_kwargs(self):
         new_enum = enum.enum("TestEnum", TRUE=True, NONE=None, ONE=1)
 
-        T.assert_equal(isinstance(new_enum.TRUE, enum.EnumItem), True)
+        assert isinstance(new_enum.TRUE, enum.EnumItem)
 
-        T.assert_equal(new_enum.TRUE, True)
-        T.assert_equal(new_enum.NONE, 0)
-        T.assert_equal(new_enum.ONE, 1)
+        assert new_enum.TRUE == True
+        assert new_enum.ONE == 1
+        # kwargs non-deterministic ordering kinda makes this hard
+        assert new_enum.NONE in [0, 2]
 
     def test_from_iterable(self):
         iterable = ["ONE", "TWO", "THREE"]

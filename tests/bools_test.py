@@ -1,9 +1,7 @@
-import testify as T
-
 from utils import bools
 
 
-class XORTestCase(T.TestCase):
+class XORTestCase(object):
     def test_odd(self):
         things = [
             True,
@@ -15,7 +13,7 @@ class XORTestCase(T.TestCase):
             False,
         ]
 
-        T.assert_equal(bools.xor(*things), True)
+        assert bools.xor(*things)
 
     def test_even(self):
         things = [
@@ -26,4 +24,4 @@ class XORTestCase(T.TestCase):
             False,
         ]
 
-        T.assert_equal(bools.xor(*things), False)
+        assert not bools.xor(*things)

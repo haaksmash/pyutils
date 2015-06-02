@@ -41,20 +41,20 @@ class ChainedDict(MutableMapping):
             raise KeyError(key)
 
     def __repr__(self):
-        return "{}({})".format(self.__class__.__name__, dict(self.iteritems()))
+        return "{}({})".format(self.__class__.__name__, dict(self.items()))
 
     def __iter__(self):
-        return self.iterkeys()
+        return self.keys()
 
     def __len__(self):
-        return len(list(self.iterkeys()))
+        return len(list(self.keys()))
 
     def iterkeys(self):
         yielded = set(self.__deleted_keys)
         if self.__parent is None:
-            iterable = self.__data.iterkeys()
+            iterable = self.__data.keys()
         else:
-            iterable = chain(self.__parent.iterkeys(), self.__data.iterkeys())
+            iterable = chain(self.__parent.keys(), self.__data.keys())
 
         for key in iterable:
             if key in yielded:
@@ -62,6 +62,10 @@ class ChainedDict(MutableMapping):
             yield key
             yielded.add(key)
 
+    keys = iterkeys
+
     def iteritems(self):
         for key in self.iterkeys():
             yield key, self[key]
+
+    items = iteritems
