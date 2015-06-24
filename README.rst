@@ -1,6 +1,9 @@
 Utils
 =====
 
+.. image:: https://travis-ci.org/haaksmash/pyutils.svg?branch=master
+    :target: https://travis-ci.org/haaksmash/pyutils
+
 Sometimes you write a function over and over again; sometimes you look up at
 the ceiling and ask "why, Guido, why isn't this included in the standard
 library?"

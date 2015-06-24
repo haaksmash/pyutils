@@ -1,3 +1,8 @@
 language: python
-install: "pip install -r requirements-dev.txt"
-script: tox
+install: 
+    - pip install -r requirements-dev.txt
+script: 
+    - travis_retry tox
+env:
+    - TOXENV=py27
+    - TOXENV=py34
