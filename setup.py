@@ -9,7 +9,7 @@ setup(
     name='utils',
     version='0.8.0',
     description='Python Distribution Utilities',
-    long_description=open("README.txt").read() if os.path.isfile("README.txt") else open("README.rst"),
+    long_description=open("README.txt").read() if os.path.isfile("README.txt") else open("README.rst").read(),
     author='Haak Saxberg',
     author_email='haak.erling@gmail.com',
     url='http://github.com/haaksmash/pyutils',
