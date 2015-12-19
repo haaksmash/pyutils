@@ -29,3 +29,14 @@ def flatten(iterable):
             placeholder.append(item)
 
     return container(placeholder)
+
+
+def flat_map(iterable, func):
+    """func must take an item and return an interable that contains that
+    item. this is flatmap in the classic mode"""
+    results = []
+    for element in iterable:
+        result = func(element)
+        if len(result) > 0:
+            results.extend(result)
+    return results

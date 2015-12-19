@@ -7,7 +7,7 @@ from setuptools import find_packages
 
 setup(
     name='utils',
-    version='0.8.0',
+    version='0.9.0',
     description='Python Distribution Utilities',
     long_description=open("README.txt").read() if os.path.isfile("README.txt") else open("README.rst").read(),
     author='Haak Saxberg',

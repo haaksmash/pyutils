@@ -72,7 +72,7 @@ intersections, differences, winnowing, a few specialized dicts...
 lists
 -----
 
-flatten and unlisting
+flatten and unlisting. also ``flat_map``!
 
 bools
 -----
@@ -118,7 +118,7 @@ provides ``get_attr``, which is really just a convenient way to do deep ``getatt
     >>> get_attr(complicated, 'this.is.a.deep.string', default=None)
     "the deep string"  # or None, if anything in the lookup chain didn't exist
 
-There's also an ``immutable`` utility, which will wrap an object and preven all attribute changes, 
+There's also an ``immutable`` utility, which will wrap an object and preven all attribute changes,
 recursively by default. Any attempt to set attributes on the wrapped object will raise an ``AttributeError``:
 
 .. code-block:: python
