@@ -189,7 +189,7 @@ class TimePeriodContainsTestCase(object):
     def contains_month(self):
         return dates.TimePeriod(
             date(date.today().year, date.today().month, 1),
-            date(date.today().year, date.today().month + 1, 1) - timedelta(days=1),
+            date(date.today().year + 1, (date.today().month % 12) + 1, 1) - timedelta(days=1),
         )
 
     def test_verbose_function(self):
