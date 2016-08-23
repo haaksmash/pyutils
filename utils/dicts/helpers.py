@@ -117,7 +117,7 @@ def invert_not_unique(dct):
     
     example:
     {1: "a", 2: "b", 3: "a"} -> {"a": [1,3], "b": [2]}"""
-    newdct = defaultdict(list)
-    for k, v in dct:
-        newdct[k].append[v]
-    return newdct
+    new_dct = defaultdict(list)
+    for k, v in dct.items():
+        new_dct[v].append(k)
+    return new_dct
