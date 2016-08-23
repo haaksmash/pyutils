@@ -1,5 +1,5 @@
 from collections import namedtuple
-
+from collections import defaultdict
 
 def from_keyed_iterable(iterable, key, filter_func=None):
     """Construct a dictionary out of an iterable, using an attribute name as
@@ -97,3 +97,27 @@ def setdefaults(dct, defaults):
         dct.setdefault(key, defaults[key])
 
     return dct
+    
+    
+def invert(dct):
+    """Transposes a dictionary, ie the keys become
+    values and vice versa
+    If values are not unique, picks one at random
+    
+    example:
+    {1: "a", 2: "b", 3: "c"} -> {"a": 1, "b": 2, "c": 3}"""
+    return {v: k for k, v in dct.items()}
+
+    
+def invert_not_unique(dct):
+    """Transposes a dictionary, ie the keys become
+    values and vice versa
+    Assumes that the values are not unique 
+    and for each gives a list of corresponding keys
+    
+    example:
+    {1: "a", 2: "b", 3: "a"} -> {"a": [1,3], "b": [2]}"""
+    newdct = defaultdict(list)
+    for k, v in dct:
+        newdct[k].append[v]
+    return newdct
