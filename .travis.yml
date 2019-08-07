@@ -5,4 +5,4 @@ script:
     - travis_retry tox
 env:
     - TOXENV=py27
-    - TOXENV=py34
+    - TOXENV=py36
