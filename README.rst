@@ -136,3 +136,9 @@ recursively by default. Any attempt to set attributes on the wrapped object will
     <Immutable SomethingElse: <SomethingElse: blue>>
 
 You can toggle the recursive immutability by specifying the 'recursive' flag.
+
+Installation (via pip)
+++++++++++++++++++++++
+
+    pip install utils
+
