@@ -12,7 +12,7 @@ setup(
     author='Haak Saxberg',
     author_email='haak.erling@gmail.com',
     url='http://github.com/haaksmash/pyutils',
-    packages=find_packages(exclude=["*.tests"]),
+    packages=find_packages(exclude=["tests*"]),
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
