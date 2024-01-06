@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='utils',
-    version='1.0.1',
+    version='1.0.2',
     description='A grab-bag of utility functions and objects',
     long_description=open("README.txt").read() if os.path.isfile("README.txt") else open("README.rst").read(),
     author='Haak Saxberg',
